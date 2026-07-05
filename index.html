@@ -23,20 +23,30 @@
         <div id="menu-screen" class="screen">
             <h3 id="menu-title">Pilih Mode Soal:</h3>
             <div class="menu-grid">
-                <button class="btn-menu" onclick="startGame('tambah')">➕ Penjumlahan</button>
-                <button class="btn-menu" onclick="startGame('kurang')">➖ Pengurangan</button>
-                <button class="btn-menu" onclick="startGame('kali')">✖️ Perkalian</button>
-                <button class="btn-menu" onclick="startGame('bagi')">➗ Pembagian</button>
-                <button class="btn-menu btn-mix" onclick="startGame('campur')">🔀 Operasi Campuran</button>
-                <button class="btn-menu btn-story" onclick="startGame('xy')">📊 Perbandingan Nilai X dan Y</button>
-                <button class="btn-menu btn-analitis" onclick="startGame('analitis')">🧠 Penalaran Analitis</button>
+                <button class="btn-menu" onclick="selectMode('tambah')">➕ Penjumlahan</button>
+                <button class="btn-menu" onclick="kurang" onclick="selectMode('kurang')">➖ Pengurangan</button>
+                <button class="btn-menu" onclick="selectMode('kali')">✖️ Perkalian</button>
+                <button class="btn-menu" onclick="selectMode('bagi')">➗ Pembagian</button>
+                <button class="btn-menu btn-mix" onclick="selectMode('campur')">🔀 Operasi Campuran</button>
+                <button class="btn-menu btn-story" onclick="selectMode('xy')">📊 Perbandingan Nilai X dan Y</button>
+                <button class="btn-menu btn-analitis" onclick="selectMode('analitis')">🧠 Penalaran Analitis</button>
             </div>
             <button class="btn-back" onclick="backToLevel()">⬅️ Kembali Pilih Level</button>
         </div>
 
+        <div id="practice-screen" class="screen">
+            <h3 id="practice-title">Pilih Paket Latihan:</h3>
+            <div class="menu-grid">
+                <button class="btn-menu btn-mix" onclick="startWithPractice(1)">📝 Paket Latihan 1</button>
+                <button class="btn-menu btn-story" onclick="startWithPractice(2)">📝 Paket Latihan 2</button>
+                <button class="btn-menu btn-analitis" onclick="startWithPractice(3)">📝 Paket Latihan 3</button>
+            </div>
+            <button class="btn-back" onclick="backToMenu()">⬅️ Kembali Pilih Mode</button>
+        </div>
+
         <div id="game-screen" class="screen">
             <div class="game-header">
-                <div class="info-box">Soal: <span id="question-count">1</span>/20</div>
+                <div class="info-box">Soal: <span id="question-count">1</span>/<span id="total-questions-text">20</span></div>
                 <div class="info-box">Kesempatan: <span id="chances-count">2</span> 🎯</div>
                 <div class="info-box">Skor: <span id="score">0</span></div>
             </div>
@@ -45,11 +55,9 @@
                 <div id="timer-bar"></div>
             </div>
 
-            <div id="question-box" class="question-box">
-                </div>
+            <div id="question-box" class="question-box"></div>
 
-            <div id="options-grid" class="options-grid">
-                </div>
+            <div id="options-grid" class="options-grid"></div>
 
             <div id="feedback" class="feedback"></div>
         </div>
