@@ -1,13 +1,13 @@
-let currentLevel = 'normal'; // easy, normal, hard
+let currentLevel = 'normal'; 
 let currentOperation = '';
 let currentQuestionIndex = 0;
 let score = 0;
-let correctAnswer = ''; // Bisa angka atau teks (A, B, C untuk tipe X-Y)
+let correctAnswer = ''; 
 let timerInterval;
 let timeLeft = 15;
 let maxTime = 15;
-let chances = 2; // Fitur 2 Kali Kesempatan Menjawab
-const totalQuestions = 20; // Upgrade ke 20 Soal
+let chances = 2; 
+const totalQuestions = 20; 
 
 // Selectors
 const levelScreen = document.getElementById('level-screen');
@@ -24,7 +24,6 @@ const timerBar = document.getElementById('timer-bar');
 
 function selectLevel(level) {
     currentLevel = level;
-    // Tentukan limit detik berdasarkan level kesulitan
     if (level === 'easy') maxTime = 25;
     else if (level === 'normal') maxTime = 15;
     else if (level === 'hard') maxTime = 10;
@@ -64,10 +63,11 @@ function generateQuestion() {
     
     questionCountText.innerText = currentQuestionIndex;
     
-    // Deteksi tipe soal (Operasi Matematika Biasa vs Analisis X & Y)
     if (currentOperation === 'xy') {
+        optionsGrid.classList.add('full-column'); // Paksa 1 kolom untuk opsi panjang X & Y
         generateXYQuestion();
     } else {
+        optionsGrid.classList.remove('full-column'); // Kembalikan ke grid 2 kolom asli untuk matematika biasa
         generateStandardQuestion();
     }
     
@@ -78,8 +78,6 @@ function generateStandardQuestion() {
     let num1, num2;
     let opSymbol = '';
     let opType = currentOperation === 'campur' ? ['tambah', 'kurang', 'kali', 'bagi'][Math.floor(Math.random() * 4)] : currentOperation;
-
-    // Skala Angka Berdasarkan Level Kesulitan
     let multiplier = currentLevel === 'easy' ? 0.5 : (currentLevel === 'hard' ? 2 : 1);
 
     if (opType === 'tambah') {
@@ -105,9 +103,9 @@ function generateStandardQuestion() {
         opSymbol = '÷';
     }
 
-    questionBox.innerHTML = `<div style="text-align:center; font-size: 2.2rem; font-weight:700;">${num1} ${opSymbol} ${num2} = ?</div>`;
+    questionBox.style.fontSize = "2.2rem";
+    questionBox.innerText = `${num1} ${opSymbol} ${num2} = ?`;
     
-    // Susun Pilihan Jawaban Angka
     let options = [correctAnswer];
     while(options.length < 4) {
         let deviation = (Math.floor(Math.random() * 5) + 1) * (Math.random() < 0.5 ? 1 : -1);
@@ -121,7 +119,6 @@ function generateStandardQuestion() {
 }
 
 function generateXYQuestion() {
-    // Kumpulan pola Soal Cerita CPNS (Perbandingan Nilai X dan Y)
     const templates = [
         { text: "Jika X adalah hasil dari 15% dari 200, dan Y adalah akar dari 900. Manakah hubungan yang benar?", x: 15/100*200, y: Math.sqrt(900) },
         { text: "Sebuah toko baju mendiskon harga baju dari Rp100.000 menjadi Rp80.000. Jika X = persentase diskon tersebut, dan Y = 25. Maka hubungan X dan Y...", x: 20, y: 25 },
@@ -132,17 +129,13 @@ function generateXYQuestion() {
         { text: "Suatu proyek selesai dalam 12 hari oleh 5 pekerja. Jika pekerja ditambah menjadi 6 orang, waktu pengerjaan menjadi X hari. Diketahui Y = 10 hari. Maka...", x: 10, y: 10 }
     ];
 
-    // Ambil acak template soal cerita
     let selected = templates[Math.floor(Math.random() * templates.length)];
-    
-    // Variasi angka sedikit berdasarkan Level kesulitan agar tidak monoton
     let modifier = currentLevel === 'easy' ? 2 : (currentLevel === 'hard' ? -2 : 0);
     let finalX = selected.x + modifier;
     let finalY = selected.y;
 
-    let questionText = selected.text;
-    // ganti teks jika terkena pengaruh level secara dinamis (opsional, untuk kesederhanaan kita pakai template inti)
-    questionBox.innerHTML = `<div style="font-size:1.1rem; font-weight:normal; margin-bottom:10px;"><b>Soal Cerita Perbandingan:</b></div>${questionText}`;
+    questionBox.style.fontSize = "1.05rem";
+    questionBox.innerHTML = `<div style="font-weight:bold; margin-bottom:5px; color:var(--primary)">Soal Perbandingan:</div>${selected.text}`;
 
     if (finalX > finalY) correctAnswer = 'A';
     else if (finalX < finalY) correctAnswer = 'B';
@@ -152,7 +145,7 @@ function generateXYQuestion() {
         { id: 'A', text: 'A. X > Y (Nilai X lebih besar dari Y)' },
         { id: 'B', text: 'B. X < Y (Nilai X lebih kecil dari Y)' },
         { id: 'C', text: 'C. X = Y (Nilai X sama dengan nilai Y)' },
-        { id: 'D', text: 'D. Hubungan antara X dan Y tidak dapat ditentukan' }
+        { id: 'D', text: 'D. Hubungan X dan Y tidak dapat ditentukan' }
     ];
 
     renderOptions(xyOptions, true);
@@ -167,9 +160,12 @@ function renderOptions(optionsArray, isXY) {
         
         if (isXY) {
             button.innerText = opt.text;
+            // Menyimpan ID (A/B/C/D) ke dalam data-attribute tombol agar mudah diidentifikasi saat diklik
+            button.setAttribute('data-value', opt.id);
             button.onclick = () => checkAnswer(button, opt.id);
         } else {
             button.innerText = opt;
+            button.setAttribute('data-value', opt);
             button.onclick = () => checkAnswer(button, opt);
         }
         optionsGrid.appendChild(button);
@@ -193,34 +189,32 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            revealCorrectAnswer(false); // Waktu habis langsung dianggap salah total
+            revealCorrectAnswer(false); 
         }
     }, 100);
 }
 
 function checkAnswer(selectedButton, selectedValue) {
-    const isCorrect = selectedValue === correctAnswer;
+    // Memastikan nilai pembanding disamakan tipenya ke String agar tidak terjadi error
+    const isCorrect = String(selectedValue) === String(correctAnswer);
     
     if (isCorrect) {
         clearInterval(timerInterval);
         selectedButton.classList.add('correct');
         
-        // Beri skor penuh jika tebakan ke-1 benar, beri setengah skor jika tebakan ke-2 benar
         score += (chances === 2) ? 5 : 2; 
         scoreText.innerText = score;
-        feedbackText.innerHTML = "<span style='color: var(--success);'>Benar! 🎯 Nilai ditambahkan.</span>";
+        feedbackText.innerHTML = "<span style='color: var(--success);'>Benar! 🎯 Nilai bertambah.</span>";
         lockOptionsAndNext();
     } else {
-        // JIKA SALAH
         chances--;
         chancesCountText.innerText = chances;
         selectedButton.classList.add('wrong');
-        selectedButton.disabled = true; // Matikan tombol yang sudah salah dipilih
+        selectedButton.disabled = true; 
 
         if (chances > 0) {
-            feedbackText.innerHTML = `<span style='color: var(--warning);'>Salah! Sisa 1 kesempatan lagi. Coba hitung ulang!</span>`;
+            feedbackText.innerHTML = `<span style='color: var(--warning);'>Salah! Sisa 1 kesempatan lagi. Ayo hitung ulang!</span>`;
         } else {
-            // Kesempatan habis total
             clearInterval(timerInterval);
             feedbackText.innerHTML = `<span style='color: var(--danger);'>Kesempatan habis!</span>`;
             revealCorrectAnswer(true);
@@ -229,16 +223,13 @@ function checkAnswer(selectedButton, selectedValue) {
 }
 
 function revealCorrectAnswer(wasActiveClick) {
-    // Kunci seluruh tombol tersisa
-    Array.from(optionsGrid.children).forEach(btn => btn.disabled = true);
-    
-    // Cari dan tandai jawaban yang benar dengan warna hijau
     Array.from(optionsGrid.children).forEach(btn => {
-        if (currentOperation === 'xy') {
-            // Untuk jenis X-Y, cek huruf depannya (A., B., C.)
-            if(btn.innerText.startsWith(correctAnswer)) btn.classList.add('correct');
-        } else {
-            if(parseInt(btn.innerText) === correctAnswer) btn.classList.add('correct');
+        btn.disabled = true;
+        let btnValue = btn.getAttribute('data-value');
+        
+        // Memperbaiki validasi pembanding string agar tidak membekukan program
+        if (String(btnValue) === String(correctAnswer)) {
+            btn.classList.add('correct');
         }
     });
 
@@ -264,11 +255,10 @@ function endGame() {
     
     document.getElementById('final-score').innerText = score;
     
-    // Kalkulasi pesan evaluasi (Maksimal poin: 100)
     let evaluation = '';
     if(score >= 85) evaluation = "Kategori A: Luar biasa! Kecepatan dan ketepatanmu setara peserta CPNS ranking atas! 🚀";
-    else if(score >= 60) evaluation = "Kategori B: Sudah cukup aman passing grade, pertahankan dan terus asah kestabilan fokusmu! 🔥";
-    else evaluation = "Kategori C: Masih sering terjebak/kehabisan waktu. Yuk sering-sering latihan di level Mudah dulu! 📚";
+    else if(score >= 60) evaluation = "Kategori B: Sudah cukup aman passing grade, pertahankan kestabilan fokusmu! 🔥";
+    else evaluation = "Kategori C: Masih sering terjebak/kehabisan waktu. Yuk latihan di level Mudah dulu! 📚";
     
     document.getElementById('evaluation-text').innerText = evaluation;
 }
