@@ -24,10 +24,6 @@ const timerBar = document.getElementById('timer-bar');
 
 function selectLevel(level) {
     currentLevel = level;
-    if (level === 'easy') maxTime = 25;
-    else if (level === 'normal') maxTime = 15;
-    else if (level === 'hard') maxTime = 10;
-
     levelScreen.classList.remove('active');
     menuScreen.classList.add('active');
     document.getElementById('menu-title').innerText = `Pilih Mode Soal (Level: ${level.toUpperCase()}):`;
@@ -63,11 +59,26 @@ function generateQuestion() {
     
     questionCountText.innerText = currentQuestionIndex;
     
-    if (currentOperation === 'xy') {
-        optionsGrid.classList.add('full-column'); // Paksa 1 kolom untuk opsi panjang X & Y
-        generateXYQuestion();
+    // ATUR DURASI WAKTU BERDASARKAN MODE DAN LEVEL
+    if (currentOperation === 'xy' || currentOperation === 'analitis') {
+        optionsGrid.classList.add('full-column'); // Mode teks panjang pakai 1 kolom penuh
+        
+        if (currentLevel === 'easy') maxTime = 60;       
+        else if (currentLevel === 'normal') maxTime = 50; 
+        else if (currentLevel === 'hard') maxTime = 40;   
+        
+        if (currentOperation === 'xy') {
+            generateXYQuestion();
+        } else {
+            generateAnalitisQuestion();
+        }
     } else {
-        optionsGrid.classList.remove('full-column'); // Kembalikan ke grid 2 kolom asli untuk matematika biasa
+        optionsGrid.classList.remove('full-column'); // Matematika biasa pakai grid 2 kolom asli
+        
+        if (currentLevel === 'easy') maxTime = 25;
+        else if (currentLevel === 'normal') maxTime = 15;
+        else if (currentLevel === 'hard') maxTime = 10;
+        
         generateStandardQuestion();
     }
     
@@ -151,16 +162,78 @@ function generateXYQuestion() {
     renderOptions(xyOptions, true);
 }
 
-function renderOptions(optionsArray, isXY) {
+function generateAnalitisQuestion() {
+    const analitisTemplates = [
+        {
+            text: "Ali, Budi, Citra, dan Dedi sedang mengantre di bank. Budi berdiri di depan Citra. Ali berdiri di belakang Citra. Dedi berdiri di paling depan. Siapakah yang berdiri di urutan ketiga?",
+            options: [
+                { id: 'A', text: 'A. Ali' },
+                { id: 'B', text: 'B. Budi' },
+                { id: 'C', text: 'C. Citra' },
+                { id: 'D', text: 'D. Dedi' }
+            ],
+            ans: 'C' // Urutan: Dedi -> Budi -> Citra -> Ali
+        },
+        {
+            text: "Dalam ujian matematika, nilai Ani lebih tinggi dari Boni. Nilai Candra sama dengan nilai Dodi. Nilai Boni lebih tinggi dari Candra. Siapakah yang memiliki nilai paling rendah?",
+            options: [
+                { id: 'A', text: 'A. Ani' },
+                { id: 'B', text: 'B. Boni' },
+                { id: 'C', text: 'C. Candra dan Dodi' },
+                { id: 'D', text: 'D. Tidak bisa ditentukan' }
+            ],
+            ans: 'C' // Urutan: Ani > Boni > Candra = Dodi
+        },
+        {
+            text: "Lima orang siswa (P, Q, R, S, T) mengikuti tes. Skor P lebih tinggi dari Q. Skor R lebih rendah dari S. Skor Q lebih tinggi dari S. Siapa yang mendapatkan skor tertinggi?",
+            options: [
+                { id: 'A', text: 'A. P' },
+                { id: 'B', text: 'B. Q' },
+                { id: 'C', text: 'C. S' },
+                { id: 'D', text: 'D. R' }
+            ],
+            ans: 'A' // Urutan: P > Q > S > R (T belum diketahui tapi P jelas di atas yang lain)
+        },
+        {
+            text: "Di sebuah meja bundar, terdapat 4 orang: Eko, Fani, Gita, dan Hari. Eko berhadapan dengan Gita. Fani duduk di sebelah kanan Eko. Siapakah yang duduk di hadapan Fani?",
+            options: [
+                { id: 'A', text: 'A. Eko' },
+                { id: 'B', text: 'B. Gita' },
+                { id: 'C', text: 'C. Hari' },
+                { id: 'D', text: 'D. Tidak ada' }
+            ],
+            ans: 'C' // Jika Eko berhadapan dengan Gita, maka Fani pasti berhadapan dengan Hari
+        },
+        {
+            text: "Kota K lebih panas dari Kota L, tetapi lebih dingin dari Kota M. Kota N lebih dingin dari Kota L. Kota manakah yang suhunya paling dingin?",
+            options: [
+                { id: 'A', text: 'A. Kota K' },
+                { id: 'B', text: 'B. Kota L' },
+                { id: 'C', text: 'C. Kota M' },
+                { id: 'D', text: 'D. Kota N' }
+            ],
+            ans: 'D' // Urutan panas: M > K > L > N
+        }
+    ];
+
+    let selected = analitisTemplates[Math.floor(Math.random() * analitisTemplates.length)];
+    
+    questionBox.style.fontSize = "1.05rem";
+    questionBox.innerHTML = `<div style="font-weight:bold; margin-bottom:5px; color:var(--primary)">Soal Penalaran Analitis:</div>${selected.text}`;
+    
+    correctAnswer = selected.ans;
+    renderOptions(selected.options, true);
+}
+
+function renderOptions(optionsArray, isTextMode) {
     optionsGrid.innerHTML = '';
     
     optionsArray.forEach(opt => {
         const button = document.createElement('button');
         button.classList.add('btn-option');
         
-        if (isXY) {
+        if (isTextMode) {
             button.innerText = opt.text;
-            // Menyimpan ID (A/B/C/D) ke dalam data-attribute tombol agar mudah diidentifikasi saat diklik
             button.setAttribute('data-value', opt.id);
             button.onclick = () => checkAnswer(button, opt.id);
         } else {
@@ -195,7 +268,6 @@ function startTimer() {
 }
 
 function checkAnswer(selectedButton, selectedValue) {
-    // Memastikan nilai pembanding disamakan tipenya ke String agar tidak terjadi error
     const isCorrect = String(selectedValue) === String(correctAnswer);
     
     if (isCorrect) {
@@ -213,7 +285,7 @@ function checkAnswer(selectedButton, selectedValue) {
         selectedButton.disabled = true; 
 
         if (chances > 0) {
-            feedbackText.innerHTML = `<span style='color: var(--warning);'>Salah! Sisa 1 kesempatan lagi. Ayo hitung ulang!</span>`;
+            feedbackText.innerHTML = `<span style='color: var(--warning);'>Salah! Sisa 1 kesempatan lagi. Ayo analisis lagi!</span>`;
         } else {
             clearInterval(timerInterval);
             feedbackText.innerHTML = `<span style='color: var(--danger);'>Kesempatan habis!</span>`;
@@ -227,7 +299,6 @@ function revealCorrectAnswer(wasActiveClick) {
         btn.disabled = true;
         let btnValue = btn.getAttribute('data-value');
         
-        // Memperbaiki validasi pembanding string agar tidak membekukan program
         if (String(btnValue) === String(correctAnswer)) {
             btn.classList.add('correct');
         }
