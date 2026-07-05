@@ -27,7 +27,7 @@ const BANK_SOAL = {
             { text: "Jika X = 1/3 + 1/4 dan Y = 1/2. Manakah kesimpulan yang sah?", x: 0.58, y: 0.5 },
             { text: "Suatu proyek selesai dalam 12 hari oleh 5 pekerja. Jika pekerja ditambah menjadi 6 orang, waktu pengerjaan menjadi X hari. Diketahui Y = 10 hari. Maka...", x: 10, y: 10 },
             { text: "Jika X = harga 3 buku tulis seharga Rp12.000 per buku, dan Y = harga 2 buah pulpen seharga Rp19.000 per pulpen. Maka...", x: 36000, y: 38000 },
-            { text: "Jika X = bilangan bulat antara 12 dan 15, sedangkan Y = bilangan genap antara 11 dan 15. Maka hubungan X dan Y adalah...", x: 13.5, y: 13 }, // representasi acak rata-rata nilai
+            { text: "Jika X = bilangan bulat antara 12 dan 15, sedangkan Y = bilangan genap antara 11 dan 15. Maka hubungan X dan Y adalah...", x: 13.5, y: 13 },
             { text: "Sebuah persegi panjang memiliki panjang 8 cm dan lebar 6 cm. X = keliling persegi panjang tersebut, Y = Luas persegi panjang tersebut.", x: 28, y: 48 }
         ],
         3: [
@@ -93,13 +93,10 @@ function selectMode(operation) {
     currentOperation = operation;
     
     if (operation === 'xy' || operation === 'analitis') {
-        // Jika mode cerita, arahkan ke halaman pilih latihan dulu
         menuScreen.classList.remove('active');
         practiceScreen.classList.add('active');
         document.getElementById('practice-title').innerText = `Mode ${operation.toUpperCase()} - Pilih Paket Latihan:`;
     } else {
-        // Jika matematika biasa, langsung mulai game
-        practiceScreen.classList.remove('active');
         menuScreen.classList.remove('active');
         startGame();
     }
@@ -121,15 +118,12 @@ function startGame() {
     score = 0;
     scoreText.innerText = score;
 
-    // Menentukan total soal berdasarkan tipe
     if (currentOperation === 'xy' || currentOperation === 'analitis') {
-        // Ambil list soal berdasarkan operasi & latihan terpilih
         activeTextQuestions = [...BANK_SOAL[currentOperation][currentPracticeIndex]];
-        // Acak urutan soalnya supaya bervariasi
         activeTextQuestions.sort(() => Math.random() - 0.5);
-        totalQuestions = activeTextQuestions.length; // Otomatis 5 soal sesuai paket bank soal cerita
+        totalQuestions = activeTextQuestions.length; 
     } else {
-        totalQuestions = 20; // Matematika biasa tetap 20 soal karena diacak rumus tanpa batas
+        totalQuestions = 20; 
     }
 
     document.getElementById('total-questions-text').innerText = totalQuestions;
@@ -150,7 +144,7 @@ function generateQuestion() {
     
     questionCountText.innerText = currentQuestionIndex;
     
-    // ATUR DURASI WAKTU BERDASARKAN MODE DAN LEVEL
+    // ATUR DURASI WAKTU DAN GENERATOR SOAL DENGAN BENAR
     if (currentOperation === 'xy' || currentOperation === 'analitis') {
         optionsGrid.classList.add('full-column'); 
         
@@ -160,7 +154,7 @@ function generateQuestion() {
         
         if (currentOperation === 'xy') {
             generateXYQuestion();
-        } else {
+        } else if (currentOperation === 'analitis') {
             generateAnalitisQuestion();
         }
     } else {
@@ -221,7 +215,6 @@ function generateStandardQuestion() {
 }
 
 function generateXYQuestion() {
-    // Ambil item soal dari antrean index berjalan
     let dataSoal = activeTextQuestions[currentQuestionIndex - 1];
     let modifier = currentLevel === 'easy' ? 2 : (currentLevel === 'hard' ? -2 : 0);
     let finalX = dataSoal.x + modifier;
@@ -245,15 +238,13 @@ function generateXYQuestion() {
 }
 
 function generateAnalitisQuestion() {
-    // Ambil item soal penalaran analitis dari paket latihan terpilih
     let dataSoal = activeTextQuestions[currentQuestionIndex - 1];
     
     questionBox.style.fontSize = "1.05rem";
     questionBox.innerHTML = `<div style="font-weight:bold; margin-bottom:5px; color:var(--primary)">Soal Penalaran Analitis:</div>${dataSoal.text}`;
     
-    correctAnswer = dataSoal.ans; // Kunci jawaban berwujud 'A', 'B', 'C', atau 'D'
+    correctAnswer = dataSoal.ans;
 
-    // Pembuatan Opsi Pilihan Ganda Huruf Abjad secara Dinamis dan Bebas Error
     const abjad = ['A', 'B', 'C', 'D'];
     let formattedOptions = dataSoal.options.map((optTeks, idx) => {
         return {
