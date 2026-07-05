@@ -3,53 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPNS Math Trainer</title>
+    <title>CPNS Math Trainer Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>⚡ CPNS Math Trainer ⚡</h1>
-        <p class="subtitle">Latih kecepatan berhitung untuk Tes TIU CPNS</p>
+        <h1>⚡ CPNS Math Trainer Pro ⚡</h1>
+        <p class="subtitle">Simulasi Akurasi & Kecepatan TIU CPNS</p>
 
-        <div id="menu-screen" class="screen active">
-            <h3>Pilih Operasi Matematika:</h3>
+        <!-- LAYAR 1: PILIH LEVEL -->
+        <div id="level-screen" class="screen active">
+            <h3>Pilih Tingkat Kesulitan:</h3>
+            <div class="menu-grid">
+                <button class="btn-level btn-easy" onclick="selectLevel('easy')">🟢 MUDAH (Waktu Lebih Longgar)</button>
+                <button class="btn-level btn-normal" onclick="selectLevel('normal')">🟡 NORMAL (Standar CPNS)</button>
+                <button class="btn-level btn-hard" onclick="selectLevel('hard')">🔴 SULIT (Angka Lebih Menantang)</button>
+            </div>
+        </div>
+
+        <!-- LAYAR 2: PILIH OPERASI -->
+        <div id="menu-screen" class="screen">
+            <h3 id="menu-title">Pilih Mode Soal:</h3>
             <div class="menu-grid">
                 <button class="btn-menu" onclick="startGame('tambah')">➕ Penjumlahan</button>
                 <button class="btn-menu" onclick="startGame('kurang')">➖ Pengurangan</button>
                 <button class="btn-menu" onclick="startGame('kali')">✖️ Perkalian</button>
                 <button class="btn-menu" onclick="startGame('bagi')">➗ Pembagian</button>
-                <button class="btn-menu btn-mix" onclick="startGame('campur')">🔀 Campuran</button>
+                <button class="btn-menu btn-mix" onclick="startGame('campur')">🔀 Operasi Campuran</button>
+                <button class="btn-menu btn-story" onclick="startGame('xy')">📊 Perbandingan Nilai X dan Y</button>
             </div>
+            <button class="btn-back" onclick="backToLevel()">⬅️ Kembali Pilih Level</button>
         </div>
 
+        <!-- LAYAR 3: GAMEPLAY -->
         <div id="game-screen" class="screen">
             <div class="game-header">
-                <div class="info-box">Soal: <span id="question-count">1</span>/10</div>
+                <div class="info-box">Soal: <span id="question-count">1</span>/20</div>
+                <div class="info-box">Kesempatan: <span id="chances-count">2</span> 🎯</div>
                 <div class="info-box">Skor: <span id="score">0</span></div>
             </div>
             
+            <!-- Timer Progress Bar -->
             <div class="timer-container">
                 <div id="timer-bar"></div>
             </div>
 
-            <div class="question-box">
-                <span id="question-text">0 + 0</span> = ?
+            <!-- Box Soal -->
+            <div id="question-box" class="question-box">
+                <!-- Teks soal disisipkan lewat JS -->
             </div>
 
+            <!-- Pilihan Ganda -->
             <div id="options-grid" class="options-grid">
-                </div>
+                <!-- Tombol pilihan ganda via JS -->
+            </div>
 
             <div id="feedback" class="feedback"></div>
         </div>
 
+        <!-- LAYAR 4: HASIL AKHIR -->
         <div id="result-screen" class="screen">
-            <h2>Selesai! 🎉</h2>
+            <h2>Evaluasi Selesai! 🎉</h2>
             <div class="result-box">
                 <p>Skor Akhir Kamu:</p>
                 <h1 id="final-score">0</h1>
                 <p id="evaluation-text"></p>
             </div>
-            <button class="btn-action" onclick="backToMenu()">Main Lagi</button>
+            <button class="btn-action" onclick="restartToMain()">Main Lagi</button>
         </div>
     </div>
 
