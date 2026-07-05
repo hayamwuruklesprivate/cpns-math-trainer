@@ -29,7 +29,7 @@ body {
 .container {
     background: var(--card-bg);
     width: 100%;
-    max-width: 550px;
+    max-width: 500px;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -37,7 +37,7 @@ body {
 }
 
 h1 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     margin-bottom: 5px;
     color: var(--primary);
 }
@@ -68,7 +68,7 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin: 20px 0;
+    margin-top: 20px;
 }
 
 .btn-menu, .btn-level, .btn-action, .btn-back {
@@ -101,7 +101,7 @@ h1 {
 .btn-back {
     background: #64748b;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 /* Gameplay Styles */
@@ -138,38 +138,49 @@ h1 {
 }
 
 .question-box {
-    font-size: 1.3rem;
-    font-weight: 600;
-    line-height: 1.5;
+    font-size: 1.8rem;
+    font-weight: 700;
     margin-bottom: 25px;
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 15px;
-    border: 1px solid #e2e8f0;
-    text-align: left;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    line-height: 1.4;
 }
 
+/* KEMBALI KE 2 KOLOM YANG RAPI */
 .options-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
 
 .btn-option {
-    background: #ffffff;
+    background: #f8fafc;
     border: 2px solid #e2e8f0;
-    padding: 14px;
-    font-size: 1rem;
-    font-weight: 500;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
     border-radius: 12px;
     cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+/* Khusus untuk soal cerita X & Y agar tulisannya muat, kita buat full 1 kolom otomatis */
+.options-grid.full-column {
+    display: flex;
+    flex-direction: column;
+}
+.options-grid.full-column .btn-option {
     text-align: left;
     padding-left: 20px;
-    transition: all 0.15s ease;
+    font-size: 0.95rem;
 }
 
 .btn-option:hover:not(:disabled) {
-    background: #f8fafc;
+    background: #f1f5f9;
     border-color: #cbd5e1;
 }
 
@@ -178,20 +189,21 @@ h1 {
     background: var(--success) !important;
     color: white;
     border-color: var(--success);
+    animation: pulse 0.3s ease;
 }
 
 .btn-option.wrong {
     background: var(--danger) !important;
     color: white;
     border-color: var(--danger);
-    opacity: 0.7;
+    animation: shake 0.3s ease;
 }
 
 .feedback {
     margin-top: 15px;
     font-weight: 600;
-    font-size: 1.1rem;
-    min-height: 25px;
+    font-size: 1rem;
+    height: 25px;
 }
 
 .result-box {
@@ -205,4 +217,16 @@ h1 {
     font-size: 4rem;
     color: var(--primary);
     margin: 15px 0;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
